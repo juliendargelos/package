@@ -1,0 +1,88 @@
+{
+  "name": {{json(name)}},
+  "version": "1.0.0",
+  "description": {{json(description)}},
+  "repository": {{json(repository)}},
+  "author": {{json(author)}},
+  "license": "MIT",
+  "main": "dist/index.js"{% if(module) { %},
+  "module": "dist/index.mjs"{% } if(browser) { %},
+  "browser": "dist/browser.js"{% } %},
+  "scripts": {
+    "build": "rollup -c"{% if(docs) { %},
+    "docs": "rm -R docs/* | jsdoc -c jsdoc.config.json",
+    "docs:watch": "watch 'yarn docs' src tutorials",
+    "docs:serve": "yarn docs:watch & serve docs"{% } if(lint) { %},
+    "lint": "eslint src"{% } if(test) { %},
+    "test": "jest"{% if(codeclimate) { %},
+    "test:report": ". .env && cc-test-reporter before-build && if yarn test; then cc-test-reporter after-build; fi"{% }} if(hooks) { %},
+    "hooks:link": "ln -f .githooks/* .git/hooks && chmod +x .git/hooks/*"{% } %}
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      "transform-glob-import",
+      ["module-resolver", {"alias": {"~": "./src"}}]
+    ]
+  }{% if(test) { %},
+  "jest": {
+    "roots": ["src", "test"],
+    "testMatch": ["<rootDir>/test/**/*"],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "<rootDir>/src/**/*",
+      "!<rootDir>/src/types/(boolean|nan|null|undefined).js"
+    ],
+    "coverageReporters": ["lcov"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  }{% } if(lint) { %},
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "eslint:recommended",
+    "globals": {"require": false},
+    "rules": {
+      "semi": ["error", "never"],
+      "complexity": ["error", 7],
+      "no-multi-spaces": ["error"],
+      "brace-style": ["error"],
+      "max-len": ["error", {"code": 90, "ignoreComments": true}],
+      "max-depth": ["error", 4],
+      "max-lines": ["error", 300],
+      "max-lines-per-function": ["error", 50],
+      "max-nested-callbacks": ["error", 4],
+      "max-statements": ["error", 10],
+      "max-params": ["error", 4]
+    }
+  }{% } %},
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.3.0",
+    "@babel/preset-env": "^7.3.1",
+    "babel-eslint": "^10.0.1",
+    "babel-plugin-module-resolver": "^3.1.3",
+    "babel-plugin-transform-glob-import": "^1.0.1",
+    "eslint": "^5.12.1",
+    "glob": "^7.1.3"{% if(test) { %},
+    "jest": "^24.0.0"{% } if(docs) { %},
+    "jsdoc": "^3.5.5",
+    "jsdoc-inheritparams-plugin": "^1.0.4",
+    "minami": "^1.2.3"{% } %},
+    "rollup": "^1.1.2",
+    "rollup-plugin-babel": "^4.3.2"{% if(browser) { %},
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-uglify": "^6.0.2"{% } if(docs) { %},
+    "serve": "^10.1.1",
+    "watch": "^1.0.2"{% } %}
+  }
+}

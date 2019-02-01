@@ -1,0 +1,24 @@
+{
+  "source": {
+    "include": ["src", "README.md"]
+  },
+  "opts": {
+    "destination": "docs",
+    "tutorials": "tutorials",
+    "recurse": true,
+    "template": "node_modules/minami",
+    "encoding": "utf8"
+  },
+  "plugins": [
+    "plugins/markdown",
+    "node_modules/jsdoc-inheritparams-plugin"
+  ],
+  "templates": {
+    "default": {
+      "includeDate": false
+    },
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "showInheritedInNav": false
+  }
+}
