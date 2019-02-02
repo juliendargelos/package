@@ -1,6 +1,6 @@
 {
   "name": "@juliendargelos/package",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A javascript package template and cli tool.",
   "repository": "https://github.com/juliendargelos/package",
   "author": "Julien Dargelos",

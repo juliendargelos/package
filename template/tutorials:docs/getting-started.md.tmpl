@@ -1,0 +1,13 @@
+### Importing {{final(name)}}
+{% if(browser) { %}
+From node:
+{% } %}
+```javascript
+import {{final(camel(name))}} from '{{name}}'
+```
+{% if(browser) { %}
+From browser (exposed as `{{final(camel(name))}}`):
+
+```html
+<script src="node_modules/{{name}}/dist/browser.js"></script>
+```{% } %}

@@ -2,19 +2,57 @@ const path = require('path')
 const fs = require('fs')
 const readline = require('readline')
 const base = require('./base')
+const helpers = require('../helpers')
 
 const interface = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 }).pause()
 
-const override = [
+const paths = [
   path.join(process.env.HOME, '.package.configuration.js'),
   path.join(process.env.HOME, '.package.configuration.json')
-].find(fs.existsSync)
+]
+
+const override = paths.find(fs.existsSync)
 
 const configuration = {
   properties: Object.keys(Object.getOwnPropertyDescriptors(base)),
+  prompted: [],
+
+  collect(properties) {
+    return properties.reduce((properties, property) => {
+      properties[property] = this[property]
+      return properties
+    }, {})
+  },
+
+  confirm(properties) {
+    console.log(`\nConfiguration: ${helpers.json(properties)}\n`)
+    return new Promise(resolve => interface.question("Press enter to confirm or ⌃C to cancel\n", () => {
+      interface.pause()
+      resolve()
+    }))
+  },
+
+  confirmAll() {
+    return this.confirm(this.collect(this.properties))
+  },
+
+  confirmPrompted() {
+    return this.confirm(this.collect(this.prompted))
+  },
+
+  save() {
+    const file = override || paths.slice(-1)[0]
+    var content = helpers.json(this.collect(this.prompted)) + "\n"
+
+    if(path.extname(file) === '.js') content = `module.exports = ${content}`
+
+    fs.writeFileSync(file, content)
+
+    return file
+  },
 
   override(configuration) {
     if(typeof configuration === 'function') {
@@ -45,7 +83,7 @@ const configuration = {
     )
   },
 
-  prompt(property) {
+  prompt(property, {required = true} = {}) {
     const value = this[property]
     const type = typeof base[property]
     const message = (
@@ -58,7 +96,7 @@ const configuration = {
       interface.resume()
       answer = answer.trim()
       if(!answer) {
-        if(type !== 'boolean' && !value) {
+        if(required && type !== 'boolean' && !value) {
           console.error('Please provide a value')
           interface.pause()
           return this.prompt(property).then(resolve)
@@ -70,7 +108,9 @@ const configuration = {
 
       if(type === 'boolean') {
         answer = answer.toLowerCase()
-        if(answer === 'yes' || answer === 'y' || answer === 'true') {
+        if(!required && !answer) {
+          return resolve()
+        } if(answer === 'yes' || answer === 'y' || answer === 'true') {
           answer = true
         } else if(answer === 'no' || answer === 'n' || answer === 'false') {
           answer = false
@@ -79,6 +119,7 @@ const configuration = {
 
       try {
         this.override({[property]: answer})
+        this.prompted.push(property)
         interface.pause()
         resolve()
       } catch(error) {
