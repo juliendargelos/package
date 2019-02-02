@@ -1,9 +1,10 @@
 #! /usr/bin/env node
 
 const command = process.argv[2]
+var script
 
 try {
-  const script = require(`./scripts/${command}.js`)
+  script = require(`./scripts/${command}.js`)
 } catch(e) {
   console.error(`Invalid command ${command}`)
   process.exit(1)
