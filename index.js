@@ -10,4 +10,4 @@ try {
   process.exit(1)
 }
 
-script(process.argv.slice(3))
+script(...process.argv.slice(3))
