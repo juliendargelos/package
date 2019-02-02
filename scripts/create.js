@@ -15,7 +15,12 @@ module.exports = (directory) => {
     }, new Promise(r => r()))
     .then(() => configuration.confirmAll())
     .then(() => {
-      directory = directory ? path.join(process.env.PWD, directory) : process.env.PWD
+      if(directory) {
+        directory = path.join(process.env.PWD, directory)
+        fs.ensureDirSync(directory)
+      } else {
+        directory = process.env.PWD
+      }
     })
     .then(() => glob.sync(path.join(templates, '**/*'), {dot: true}).forEach(file => {
       var content
