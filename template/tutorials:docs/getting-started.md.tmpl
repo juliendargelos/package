@@ -1,12 +1,12 @@
-### Importing {{final(name)}}
+### Importing {{moduleName}}
 {% if(browser) { %}
 From node:
 {% } %}
 ```javascript
-import {{final(camel(name))}} from '{{name}}'
+import {{moduleName}} from '{{name}}'
 ```
 {% if(browser) { %}
-From browser (exposed as `{{final(camel(name))}}`):
+From browser (exposed as `{{moduleName}}`):
 
 ```html
 <script src="node_modules/{{name}}/dist/browser.js"></script>

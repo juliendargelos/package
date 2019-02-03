@@ -10,5 +10,11 @@ module.exports = {
 
   final: string => {
     return string.split('/').slice(-1)[0]
+  },
+
+  date: {
+    get year() {
+      return new Date().getFullYear()
+    }
   }
 }
