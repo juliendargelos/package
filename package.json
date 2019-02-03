@@ -1,13 +1,13 @@
 {
   "name": "@juliendargelos/package",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A javascript package template and cli tool.",
   "homepage": "https://github.com/juliendargelos/package",
   "repository": "https://github.com/juliendargelos/package",
   "bugs": "https://github.com/juliendargelos/package/issues",
   "author": "Julien Dargelos",
   "license": "MIT",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo NO TESTS"
   },
