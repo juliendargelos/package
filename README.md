@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/logo.svg"/>
+  <img src="https://rawcdn.githack.com/juliendargelos/package/0da40bdc096c59cea9523c19e584a7960a639231/logo.svg"/>
 </p>
 
 <h1 align="center">Package</h1>
