@@ -1,6 +1,12 @@
-# Package
+<p align="center">
+  <img src="/logo.svg"/>
+</p>
 
-A javascript package template and cli tool.
+<h1 align="center">Package</h1>
+
+<p align="center">
+  A javascript package template and cli tool.
+</p>
 
 ### Install
 
