@@ -21,7 +21,7 @@ npm install -g @juliendargelos/package
 Create a package:
 
 ```
-package [path]
+package [PATH]
 ```
 
 ### Features
