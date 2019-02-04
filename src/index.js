@@ -48,6 +48,7 @@ class Package extends Command {
       .then(() => Template.all.forEach(template => {
         if(template.build(path, configuration)) this.log(`Created ${template.destination}`)
       }))
+      .then(() => shell.exec(`cd ${JSON.stringify(path)} && yarn && git init`))
       .catch(error => {
         if(error) throw error
       })
