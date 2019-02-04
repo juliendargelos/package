@@ -30,7 +30,7 @@ package [PATH]
     + [uglify](https://github.com/TrySound/rollup-plugin-uglify)
     + [cmjs](https://rollupjs.org/guide/en#output-format)
     + [es](https://rollupjs.org/guide/en#output-format)
-    + [umd](https://rollupjs.org/guide/en#output-format) (browser compatible)
+    + [umd](https://rollupjs.org/guide/en#output-format)
 - [babel](https://github.com/babel/babel)
     + [proposal-class-properties](https://github.com/babel/babel/tree/master/packages/babel-plugin-proposal-class-properties)
     + [transform-glob-import](https://github.com/devongovett/babel-plugin-transform-glob-import)
@@ -41,6 +41,6 @@ package [PATH]
     + [inheritparams](https://github.com/juliendargelos/jsdoc-inheritparams-plugin)
 - [eslint](https://github.com/eslint/eslint)
 - [jest](https://github.com/facebook/jest)
-    + Codeclimate reporter
+    + [Codeclimate reporter](https://github.com/codeclimate/test-reporter)
 - [Git hooks](https://githooks.com)
 - [MIT Licence](https://choosealicense.com/licenses/mit/)
