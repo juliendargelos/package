@@ -1,6 +1,10 @@
 # {{moduleName}}
 {% if(description) { %}
 {{description}}
+{% } if(docs) { %}
+- [Getting started]({{githubPage}}/tutorial-getting-started)
+- [Documentation]({{githubPage}})
+- [Repository]({{repository}})
 {% } %}
 ### Install
 
@@ -14,4 +18,54 @@ With npm:
 
 ```shell
 npm install {{name}} --save
+```
+
+### Development
+
+Clone the repository:
+
+```shell
+git clone {{sshRepository}}
+```
+
+Install dependencies:
+
+```shell
+yarn
+```{% if(hooks) { %}
+
+Link git hooks:
+
+```shell
+yarn hooks:link
+```{% } if(docs) { %}
+
+Generate documentation:
+
+```shell
+yarn docs
+```
+
+Serve documentation:
+
+```shell
+yarn docs:serve
+```{% } if(lint) { %}
+
+Lint:
+
+```shell
+yarn lint
+```{% } if(docs) { %}
+
+Test:
+
+```shell
+yarn test
+```{% } %}
+
+Build:
+
+```shell
+yarn build
 ```
