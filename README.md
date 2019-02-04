@@ -24,6 +24,8 @@ Create a package:
 package [PATH]
 ```
 
+If path is omitted, the package will be created in the working directory.
+
 ### Template features
 
 - [rollup](https://github.com/rollup/rollup)
