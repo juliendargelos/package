@@ -26,7 +26,7 @@ class Template {
   }
 
   get conditions() {
-    return this.path.match(/:[^\/]+/g) || []
+    return this.path.match(/:[^\/]+/g).map(c => c.substring(1)) || []
   }
 
   get content() {
