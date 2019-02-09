@@ -46,6 +46,7 @@ If path is omitted, the package will be created in the working directory.
 - [jsdoc](https://github.com/jsdoc3/jsdoc)
     + [minami](https://github.com/nijikokun/minami)
     + [markdown](https://github.com/jsdoc3/jsdoc/blob/master/plugins/markdown.js)
+    + [this-type](https://github.com/juliendargelos/jsdoc-this-type-plugin)
     + [inheritparams](https://github.com/juliendargelos/jsdoc-inheritparams-plugin)
 - [eslint](https://github.com/eslint/eslint)
 - [jest](https://github.com/facebook/jest)

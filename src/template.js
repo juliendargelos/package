@@ -57,13 +57,8 @@ class Template {
     var content
     if(this.template) {
       content = new TemplateJS(this.absolute, {
-        ...helpers,
         ...configuration,
-        moduleName: helpers.camel(helpers.final(configuration.name)),
-        sshRepository: configuration.repository
-          .replace(/^https?:\/\/(?:www\.)?([^\/]+)\/(.+)$/, 'git@$1:$2'),
-        githubPage: configuration.repository
-          .replace(/^https?:\/\/(?:www\.)?([^\/]+)\/([^\/]+)(.+)$/, 'https://$1.github.io/$2')
+        ...helpers(configuration)
       }).toString()
     } else {
       content = this.content
