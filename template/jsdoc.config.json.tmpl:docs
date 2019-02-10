@@ -12,7 +12,8 @@
   "plugins": [
     "plugins/markdown",
     "node_modules/jsdoc-this-type-plugin",
-    "node_modules/jsdoc-inheritparams-plugin"
+    "node_modules/jsdoc-inheritparams-plugin",
+    "node_modules/jsdoc-override-keeps-meta-plugin"
   ],
   "templates": {
     "default": {
