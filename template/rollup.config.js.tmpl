@@ -1,29 +1,52 @@
-import babel from 'rollup-plugin-babel'{% if(browser) { %}
-import { uglify } from 'rollup-plugin-uglify'
+<% if (typescript) { %>import typescript from 'rollup-plugin-typescript2'<% } else { %>import babel from 'rollup-plugin-babel'<% } if (browser) { %>
 import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'{% } %}
-import path from 'path'
-import pkg from './package.json'
+import commonjs from 'rollup-plugin-commonjs'
+import { terser } from 'rollup-plugin-terser'<% } if (lint) { %>
+import { eslint } from 'rollup-plugin-eslint'<% } %>
+import pkg from './package.json'<% if (browser) { %>
+
+const config = {
+  input: 'src/index.<%- typescript ? 't' : 'j'%>s',
+  output: { sourcemap: true },
+  plugins: [<% if (typescript) { %>
+    typescript({ cacheRoot: '.cache' })<% } else { %>
+    babel({ exclude: ['node_modules/**'] })<% } %>
+  ]
+}
 
 export default [
   {
-    input: 'src/index.js',
-    output: {% if(module) { %}[
-      {% } %}{file: pkg.main, format: 'cjs'}{% if(module) { %},
-      {file: pkg.module, format: 'es'}
-    ]{% } %},
+    ...config,
+    output: <% if (module) { %>[
+      <% } %>{ ...config.output, file: pkg.main, format: 'cjs' }<% if (module) { %>,
+      { ...config.output, file: pkg.module, format: 'es' }
+    ]<% } if (lint) { %>,
     plugins: [
-      babel({exclude: ['node_modules/**']})
-    ]
-  }{% if(browser) { %},
+      eslint(),
+      ...config.plugins
+    ]<% } %>
+  },
   {
-    input: 'src/index.js',
-    output: {file: pkg.browser, name: '{{moduleName}}', format: 'umd'},
+    ...config,
+    output: { ...config.output, file: pkg.browser, name: '<%- moduleName %>', format: 'umd' },
     plugins: [
-      resolve(),
-      babel({exclude: ['node_modules/**']}),
+      resolve({ extensions: ['.js', '.ts'] }),
+      ...config.plugins,
       commonjs(),
-      uglify()
+      terser()
     ]
-  }{% } %}
-]
+  }
+]<% } else { %>
+export default {
+  input: 'src/index.<%- typescript ? 't' : 'j'%>s',
+  output: <% if (module) { %>[
+    <% } %>{ file: pkg.main, format: 'cjs', sourcemap: true }<% if (module) { %>,
+    { file: pkg.module, format: 'es', sourcemap: true }
+  ]<% } %>,
+  plugins: [<% if (lint) { %>
+    eslint(),<% } if (typescript) { %>
+    typescript({ cacheRoot: '.cache' })<% } else { %>
+    babel({ exclude: ['node_modules/**'] })
+    })<% } %>
+  ]
+}<% } %>

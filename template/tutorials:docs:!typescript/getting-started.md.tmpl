@@ -1,0 +1,13 @@
+### Importing <%- moduleName %>
+<% if(browser) { %>
+From node:
+<% } %>
+```javascript
+import <%- moduleName %> from '<%- name %>'
+```
+<% if(browser) { %>
+From browser (exposed as `<%- moduleName %>`):
+
+```html
+<script src="node_modules/<%- name %>/dist/browser.js"></script>
+```<% } %>

@@ -1,6 +1,10 @@
-node_modules{% if(test) { %}
-coverage{% } %}
+node_modules<% if (test) { %>
+coverage
+yarn.lock
 .DS_Store
 .env
+.tmp<% } if (typescript) { %>
+.cache
+*.tsbuildinfo<% } %>
 *.log
-yarn.lock
+

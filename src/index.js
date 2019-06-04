@@ -7,86 +7,138 @@ const inquirer = require('inquirer')
 const Template = require('./template')
 
 class Package extends Command {
-  create(path, configuration) {
-    return Object.entries(configuration)
-      .reduce((promise, [property, value]) => promise.then(() => inquirer
-        .prompt([{
-          type: typeof value === 'boolean' ? 'confirm' : 'input',
-          name: property,
-          ...(typeof value !== 'string' || value ? {default: value} : {})
-        }])
-        .then(answers => { configuration[property] = answers[property] })
-      ), new Promise(r => r()))
-      .then(() => {
-        this.log(Object
-          .entries(configuration)
-          .reduce((string, [property, value]) => {
-            return `${string}${property}: ${value}\n`
-          }, "\n") +
-          `\nPackage directory: ${path}\n`
-        )
-
-        return inquirer.prompt([{
-          type: 'list',
-          name: 'confirmation',
-          message: `Please confirm your configuration`,
-          choices: ['Confirm', 'Edit', 'Cancel']
-        }])
-      })
-      .then(({confirmation}) => {
-        switch(confirmation) {
-          case 'Edit':
-            return inquirer
-              .prompt([{name: 'path', default: path}])
-              .then(({path}) => this.create(path, configuration))
-              .then(() => new Promise((_, r) => r()))
-          case 'Cancel':
-            return new Promise((_, r) => r())
-        }
-      })
-      .then(() => fs.ensureDirSync(path))
-      .then(() => Template.all.forEach(template => {
-        if(template.build(path, configuration)) this.log(`Created ${template.destination}`)
-      }))
-      .then(() => shell.exec(`cd ${JSON.stringify(path)} && yarn && git init`))
-      .catch(error => {
-        if(error) throw error
-      })
+  async run() {
+    await this.create(this.parse(this.constructor).args)
   }
 
-  async run() {
-    var {args: {path}} = this.parse(this.constructor)
-    path = Path.resolve(path)
+  static log(...args) {
+    return console.log(...args)
+  }
 
-    const username = await githubUsername(
-      shell.exec('git config --get user.email', {silent: true}).stdout.trim()
+  static async prompt(questions, prompt = true) {
+    if (!Array.isArray(questions)) questions = [questions]
+
+    if (prompt) {
+      return inquirer.prompt(questions.map(question =>({
+        validate: value => ((
+          !value &&
+          question.type !== 'boolean' &&
+          question.type !== 'number' &&
+          'default' in question &&
+          question.default !== '' &&
+          'Please provide a value'
+        ) || true),
+        ...question
+      })))
+    }
+
+    return Promise.resolve(questions.reduce((answers, question) => {
+      const answer = question.default
+      answers[question.name] = typeof answer === 'function' ? answer(answers) : answer
+      return answers
+    }, {}))
+  }
+
+  static async create({
+    prompt = true,
+    install = true,
+    git = true,
+    name = null,
+    ...configuration
+  } = {}) {
+    const email = shell.exec('git config --get user.email', { silent: true }).stdout.trim()
+    const username = await githubUsername(email)
+
+    const path = Path.resolve('.')
+
+    configuration = await this.prompt(Object
+      .entries({
+        name: name || Path.basename(path),
+        path: answers => name ? Path.join(path, answers.name) : path,
+        description: '',
+        author: shell.exec('git config --get user.name', { silent: true }).stdout.trim(),
+        email,
+        repository: ({ name }) => `https://github.com/${username}/${name}`,
+        module: true,
+        browser: true,
+        typescript: true,
+        docs: true,
+        lint: true,
+        test: true,
+        githooks: true,
+        codeclimate: true,
+        ...configuration
+      })
+      .map(([property, value]) => ({
+        type: typeof value === 'boolean' ? 'confirm' : 'input',
+        name: property,
+        default: value,
+        ...(value === '' ? { validate: () => true } : {}),
+      })
+    ), prompt)
+
+    this.log(Object
+      .entries(configuration)
+      .reduce((string, [property, value]) => (
+        `${string}${property}: ${value}\n`
+      ), '\n')
     )
 
-    const name = Path.basename(path)
+    const { confirmation } = await this.prompt({
+      type: 'list',
+      name: 'confirmation',
+      default: 'Confirm',
+      message: `Please confirm your configuration`,
+      choices: ['Confirm', 'Edit', 'Cancel']
+    }, prompt)
 
-    this.create(path, {
-      name,
-      description: '',
-      author: shell.exec('git config --get user.name', {silent: true}).stdout.trim(),
-      repository: () => `https://www.github.com/${username}/${name}`,
-      module: true,
-      browser: true,
-      docs: true,
-      lint: true,
-      test: true,
-      hooks: true,
-      codeclimate: true
-    })
+    switch (confirmation) {
+      case 'Confirm':
+        const destination = configuration.path
+        const pkgPath = Path.join(destination, 'package.json')
+        await fs.ensureDir(destination)
+        await Promise.all(Template.all.map((template) => template
+          .build(configuration)
+          .then(() => this.log(`Created ${template.destination}`))
+          .catch(error => this.log(`Could not create ${template.destination}: ${error}`))
+        ))
+
+        const pkg = await fs.readJson(pkgPath)
+
+        ;['dependencies', 'devDependencies', 'peerDependencies'].forEach(field => {
+          if (!pkg[field]) return
+          pkg[field] = Object
+            .entries(pkg[field])
+            .sort(([a], [b]) => a < b ? -1 : (a > b ? 1 : 0))
+            .reduce((dependencies, [dependency, version]) => {
+              dependencies[dependency] = version
+              return dependencies
+            }, {})
+        })
+
+        await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2))
+
+        if (install) shell.exec(`yarn --cwd ${JSON.stringify(destination)}`)
+        if (git) shell.exec(`cd ${JSON.stringify(destination)} && git init`)
+
+        break
+      case 'Edit':
+        await this.create({ prompt, install, git, ...configuration })
+        break
+    }
   }
 }
 
 Package.description = 'Creates a package.'
 
 Package.args = [{
-  name: 'path',
+  name: 'name',
   required: false,
-  description: 'package path',
-  default: '.'
+  description: 'package name',
+  default: null
 }]
+
+Package.prototype.prompt = Package.prompt
+Package.prototype.create = Package.create
 
 module.exports = Package

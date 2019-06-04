@@ -14,7 +14,10 @@
     "node_modules/jsdoc-this-type-plugin",
     "node_modules/jsdoc-inheritparams-plugin",
     "node_modules/jsdoc-override-keeps-meta-plugin"
-  ],
+  ]<% if (typescript) { %>,
+  "typescript": {
+    "moduleRoot": "src"
+  }<% } %>,
   "templates": {
     "default": {
       "includeDate": false

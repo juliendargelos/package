@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const Path = require('path')
 const glob = require('glob')
-const TemplateJS = require('template-js')
+const ejs = require('ejs')
 const helpers = require('./helpers')
 
 class Template {
@@ -26,7 +26,7 @@ class Template {
   }
 
   get conditions() {
-    return (this.path.match(/:[^\/]+/g) || []).map(c => c.substring(1))
+    return (this.path.match(/:[^\/:]+/g) || []).map(c => c.substring(1))
   }
 
   get content() {
@@ -42,11 +42,17 @@ class Template {
   }
 
   ignored(configuration) {
-    return this.conditions.some(condition => !configuration[condition])
+    return (
+      this.conditions.length &&
+      this.conditions.some(condition => condition[0] === '!'
+        ? configuration[condition.substring(1)]
+        : !configuration[condition]
+      )
+    )
   }
 
   join(parent, path) {
-    if(path.split('/').slice(0, parent.split('/').length).join('/') === parent) {
+    if (path.split('/').slice(0, parent.split('/').length).join('/') === parent) {
       return path
     } else {
       return Path.join(path, parent)
@@ -55,8 +61,8 @@ class Template {
 
   render(configuration) {
     var content
-    if(this.template) {
-      content = new TemplateJS(this.absolute, {
+    if (this.template) {
+      content = ejs.render(fs.readFileSync(this.absolute).toString(), {
         ...configuration,
         ...helpers(configuration)
       }).toString()
@@ -67,18 +73,19 @@ class Template {
     return content.replace(/\n+$/, '') + "\n"
   }
 
-  copy(destination, configuration) {
-    destination = Path.join(destination, this.destination)
-    if(this.directory) fs.ensureDirSync(destination)
-    else {
-      fs.ensureFileSync(destination)
-      fs.writeFileSync(destination, this.render(configuration))
+  async copy(configuration) {
+    const destination = Path.join(configuration.path, this.destination)
+    if (this.directory) {
+      await fs.ensureDir(destination)
+    } else {
+      await fs.ensureFile(destination)
+      await fs.writeFile(destination, this.render(configuration))
     }
   }
 
-  build(destination, configuration) {
-    if(this.ignored(configuration)) return false
-    this.copy(destination, configuration)
+  async build(configuration) {
+    if (this.ignored(configuration)) return false
+    await this.copy(configuration)
     return true
   }
 }
@@ -86,7 +93,7 @@ class Template {
 Template.path = Path.join(__dirname, '../template')
 
 Template.all = glob
-  .sync(Path.join(Template.path, '**/*'), {dot: true})
+  .sync(Path.join(Template.path, '**/*'), { dot: true })
   .map(path => new Template(path.substring(Template.path.length)))
 
 module.exports = Template

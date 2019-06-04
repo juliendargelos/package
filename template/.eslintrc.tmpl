@@ -1,0 +1,14 @@
+{
+  "parser": "<%- typescript ? '@typescript-eslint/parser' : 'babel-eslint' %>"<% if (typescript) { %>,
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }<% } %>,
+  "extends": "<%- typescript ? 'plugin:@typescript-eslint/recommended' : 'eslint:recommended' %>",
+  "env": { "es6": true },
+  "globals": { "require": false }<% if (typescript) { %>,
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/indent": ["error", 2],
+    "@typescript-eslint/no-parameter-properties": "off"
+  }<% } %>
+}

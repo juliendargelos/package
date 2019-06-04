@@ -1,23 +1,23 @@
-# {{moduleName}}
-{% if(description) { %}
-{{description}}
-{% } if(docs) { %}
-- [Getting started]({{githubPage}}/tutorial-getting-started)
-- [Documentation]({{githubPage}})
-- [Repository]({{repository}})
-{% } %}
+# <%- moduleName %>
+<% if (description) { %>
+<%- description %>
+<% } if (docs) { %>
+<% if (!typescript) { %>- [Getting started](<%- githubPage %>/tutorial-getting-started)
+<% } %>- [Documentation](<%- githubPage %>)
+- [Repository](<%- repository %>)
+<% } %>
 ### Install
 
 With yarn:
 
 ```shell
-yarn add {{name}}
+yarn add <%- name %>
 ```
 
 With npm:
 
 ```shell
-npm install {{name}} --save
+npm install <%- name %> --save
 ```
 
 ### Development
@@ -25,20 +25,20 @@ npm install {{name}} --save
 Clone the repository:
 
 ```shell
-git clone {{sshRepository}}
+git clone <%- sshRepository %>
 ```
 
 Install dependencies:
 
 ```shell
 yarn
-```{% if(hooks) { %}
+```<% } if (docs) { %>
 
-Link git hooks:
+Build:
 
 ```shell
-yarn hooks:link
-```{% } if(docs) { %}
+yarn build
+```
 
 Generate documentation:
 
@@ -46,26 +46,20 @@ Generate documentation:
 yarn docs
 ```
 
-Serve documentation:
+Watch and serve documentation:
 
 ```shell
-yarn docs:serve
-```{% } if(lint) { %}
+yarn docs:dev
+```<% } if (lint) { %>
 
 Lint:
 
 ```shell
 yarn lint
-```{% } if(docs) { %}
+```<% } if (test) { %>
 
 Test:
 
 ```shell
 yarn test
-```{% } %}
-
-Build:
-
-```shell
-yarn build
-```
+```<% } %>
