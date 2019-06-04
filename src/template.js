@@ -26,7 +26,10 @@ class Template {
   }
 
   get conditions() {
-    return this.parsed[2].slice(1, -1).split(',').filter(Boolean)
+    return (this.path.match(/\[[^\/\]]+\]/g) || []).reduce((conditions, condition) => {
+      conditions.slice(1, -1).push(...condition.split(','))
+      return conditions
+    }, [])
   }
 
   get content() {
