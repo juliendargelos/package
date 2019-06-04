@@ -27,7 +27,7 @@ class Template {
 
   get conditions() {
     return (this.path.match(/\[[^\/\]]+\]/g) || []).reduce((conditions, condition) => {
-      conditions.slice(1, -1).push(...condition.split(','))
+      conditions.push(...condition.slice(1, -1).split(','))
       return conditions
     }, [])
   }
@@ -45,6 +45,8 @@ class Template {
   }
 
   ignored(configuration) {
+    console.log(this.conditions)
+
     return (
       this.conditions.length &&
       this.conditions.some(condition => condition[0] === '!'
