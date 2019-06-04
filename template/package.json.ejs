@@ -35,7 +35,7 @@
   }<% if (githooks) { %>,
   "husky": {
     "hooks": {
-      "pre-commit": "run-s<%- lint ? ' lint' : ''%><%- test ? ' test' : '' %> build<%- docs ? ' docs' : ''%> && git add src dist<%- docs ? ' docs' : ''%>"
+      "pre-commit": "run-s build<%- test ? ' test' : '' %><%- docs ? ' docs' : ''%> && git add src dist<%- docs ? ' docs' : ''%>"
     }
   }<% } %>,
   "devDependencies": {<% if (typescript) { %>
