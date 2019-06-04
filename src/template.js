@@ -10,7 +10,7 @@ class Template {
   }
 
   get parsed() {
-    return this.path.match(/^(.*?)(?:\.(tmpl))?(?::[^\/]+)?$/)
+    return this.path.match(/^(\/?.*?)((?:\[[^\/\]]+\])?)([^\/]+?)((?:\.ejs)?)$/)
   }
 
   get absolute() {
@@ -18,15 +18,15 @@ class Template {
   }
 
   get destination() {
-    return this.parsed[1].replace(/:[^\/]+/g, '').replace(/^\//, '')
+    return this.parsed.slice(1, 4).join('').replace(/\[[^\/\]]+\]/g, '')
   }
 
   get template() {
-    return this.parsed[2] === 'tmpl'
+    return this.parsed[4] === '.ejs'
   }
 
   get conditions() {
-    return (this.path.match(/:[^\/:]+/g) || []).map(c => c.substring(1))
+    return this.parsed[2].slice(1, -1).split(',').filter(Boolean)
   }
 
   get content() {
