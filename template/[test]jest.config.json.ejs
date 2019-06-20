@@ -2,6 +2,9 @@
   "roots": ["src", "test"]<% if (typescript) { %>,
   "preset": "ts-jest"<% } %>,
   "testMatch": ["<rootDir>/test/**/*"],
+  "moduleNameMapper": {
+    "^~/(.+)$": "<rootDir>/src/$1"
+  },
   "collectCoverage": true,
   "collectCoverageFrom": ["<rootDir>/src/**/*"],
   "coverageReporters": ["lcov"],
