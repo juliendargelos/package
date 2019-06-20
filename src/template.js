@@ -45,8 +45,6 @@ class Template {
   }
 
   ignored(configuration) {
-    console.log(this.conditions)
-
     return (
       this.conditions.length &&
       this.conditions.some(condition => condition[0] === '!'
