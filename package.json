@@ -1,6 +1,6 @@
 {
   "name": "@juliendargelos/package",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "A javascript package template and cli tool.",
   "homepage": "https://github.com/juliendargelos/package",
   "repository": "https://github.com/juliendargelos/package",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "upgrade:template": "node scripts/upgrade",
+    "upgrade:template": "# node scripts/upgrade",
     "test": "node scripts/test"
   },
   "files": [
